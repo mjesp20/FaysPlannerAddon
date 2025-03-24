@@ -54,7 +54,7 @@ local function GenerateRaidInfo()
     for i = 1, GetNumRaidMembers() do
         local name, _, _, _, class = GetRaidRosterInfo(i)
         if name and class then
-            output = output .. name .. "(" .. string.lower(class) .. ")," .. string.lower(class) .. "\n"
+            output = output .. name .. string.lower(class) .. "\n"
         end
     end
     CreateCopyFrame(output)
