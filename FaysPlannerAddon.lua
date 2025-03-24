@@ -4,7 +4,7 @@ local function CreateCopyFrame(text)
         local f = CreateFrame("Frame", "FaysPlannerFrame", UIParent)
         f:SetWidth(400)
         f:SetHeight(300)
-        f:SetPoint("CENTER", nil, "CENTER", 0, 0) -- Corrected SetPoint syntax
+        f:SetPoint("CENTER", nil, "CENTER", 0, 0)
         f:SetBackdrop({
             bgFile = "Interface/DialogFrame/UI-DialogBox-Background",
             edgeFile = "Interface/DialogFrame/UI-DialogBox-Border",
@@ -30,7 +30,6 @@ local function CreateCopyFrame(text)
         editBox:SetAutoFocus(true)
         editBox:SetPoint("TOPLEFT", scrollFrame, "TOPLEFT", 0, 0)
         editBox:SetScript("OnEscapePressed", function() f:Hide() end)
-        --editBox:SetScript("OnEditFocusGained", function(self) self:HighlightText() end)
 
         scrollFrame:SetScrollChild(editBox)
         f.editBox = editBox
@@ -44,19 +43,79 @@ local function CreateCopyFrame(text)
     end
 
     -- Set the text and show the frame
-    FaysPlannerFrame.editBox:SetText(text)
+    FaysPlannerFrame.editBox:SetText(text or "")
     FaysPlannerFrame.editBox:HighlightText()
     FaysPlannerFrame:Show()
 end
 
 local function GenerateRaidInfo()
-    local output = ""
-    for i = 1, GetNumRaidMembers() do
-        local name, _, _, _, class = GetRaidRosterInfo(i)
-        if name and class then
-            output = output .. name .. "," .. string.lower(class) .. "\n"
+    -- Predefined class names for Classic (1.12)
+    local validClasses = {
+        ["WARRIOR"] = true,
+        ["PRIEST"] = true,
+        ["MAGE"] = true,
+        ["ROGUE"] = true,
+        ["DRUID"] = true,
+        ["HUNTER"] = true,
+        ["WARLOCK"] = true,
+        ["SHAMAN"] = true,
+        ["PALADIN"] = true
+    }
+
+    -- Create a table to store raid members by class
+    local classSortedMembers = {}
+    
+    -- Get number of raid members
+    local numRaidMembers = GetNumRaidMembers()
+    DEFAULT_CHAT_FRAME:AddMessage("Number of raid members: " .. numRaidMembers)
+
+    -- Collect raid members
+    for i = 1, numRaidMembers do
+        local name, rank, subgroup, level, class, fileName, zone, isOnline, isDead = GetRaidRosterInfo(i)
+        
+        -- Normalize class name and check validity
+        local normalizedClass = class and string.upper(class)
+        
+        -- Debug: Output details of each raid member
+        --DEFAULT_CHAT_FRAME:AddMessage(string.format("Raid Member %d: Name=%s, OriginalClass=%s, NormalizedClass=%s", 
+            --i, tostring(name), tostring(class), tostring(normalizedClass)))
+
+        if name and normalizedClass and validClasses[normalizedClass] then
+            -- Initialize class group if not exists
+            if not classSortedMembers[normalizedClass] then
+                classSortedMembers[normalizedClass] = {}
+            end
+            
+            -- Add member to their class group
+            table.insert(classSortedMembers[normalizedClass], name)
         end
     end
+    
+    -- Predefined class order for Classic (1.12)
+    local classOrder = {
+        "WARRIOR", "PRIEST", "MAGE", "ROGUE", 
+        "DRUID", "HUNTER", "WARLOCK", "SHAMAN", "PALADIN"
+    }
+    
+    -- Generate output
+    local output = ""
+    for _, className in ipairs(classOrder) do
+        if classSortedMembers[className] then
+            -- Sort names within each class alphabetically
+            table.sort(classSortedMembers[className])
+            
+            -- Add class members to output
+            for _, name in ipairs(classSortedMembers[className]) do
+                output = output .. name .. "," .. string.lower(className) .. "\n"
+            end
+        end
+    end
+    
+    -- Ensure we have output
+    if output == "" then
+        output = "No raid members found.\nDebug info: Total members = " .. numRaidMembers
+    end
+    
     CreateCopyFrame(output)
 end
 
