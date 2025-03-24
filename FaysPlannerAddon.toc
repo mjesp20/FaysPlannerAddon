@@ -1,0 +1,6 @@
+## Interface: 11200
+## Title: FaysPlanner
+## Version: 1.0
+## Author: Faylily
+## Notes: Exports raid members with class info for use in planner app
+FaysPlannerAddon.lua
