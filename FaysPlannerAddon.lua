@@ -27,10 +27,10 @@ local function CreateCopyFrame(text)
         editBox:SetFontObject(GameFontNormal)
         editBox:SetWidth(360)
         editBox:SetHeight(260)
-        editBox:SetAutoFocus(false)
+        editBox:SetAutoFocus(true)
         editBox:SetPoint("TOPLEFT", scrollFrame, "TOPLEFT", 0, 0)
         editBox:SetScript("OnEscapePressed", function() f:Hide() end)
-        editBox:SetScript("OnEditFocusGained", function(self) self:HighlightText() end)
+        --editBox:SetScript("OnEditFocusGained", function(self) self:HighlightText() end)
 
         scrollFrame:SetScrollChild(editBox)
         f.editBox = editBox
@@ -54,7 +54,7 @@ local function GenerateRaidInfo()
     for i = 1, GetNumRaidMembers() do
         local name, _, _, _, class = GetRaidRosterInfo(i)
         if name and class then
-            output = output .. name .. string.lower(class) .. "\n"
+            output = output .. name .. "," .. string.lower(class) .. "\n"
         end
     end
     CreateCopyFrame(output)
