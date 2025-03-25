@@ -117,6 +117,13 @@ local function GenerateRaidInfo()
     end
     
     CreateCopyFrame(output)
+
+        -- No superwow, no superapi
+    if not SUPERWOW_VERSION then
+        DEFAULT_CHAT_FRAME:AddMessage("No SuperWoW detected");
+    else then
+        ExportFile("raid.csv", output)
+    end
 end
 
 SLASH_FAYSPLANNER1 = "/faysplanner"
