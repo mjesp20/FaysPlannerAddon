@@ -116,13 +116,14 @@ local function GenerateRaidInfo()
         output = "No raid members found.\nDebug info: Total members = " .. numRaidMembers
     end
     
-    CreateCopyFrame(output)
+    
 
         -- No superwow, no superapi
     if not SUPERWOW_VERSION then
         DEFAULT_CHAT_FRAME:AddMessage("No SuperWoW detected");
-    else then
-        ExportFile("raid.csv", output)
+        CreateCopyFrame(output)
+    else
+        ExportFile("raidinfo", output)
     end
 end
 
